@@ -1,4 +1,8 @@
 {
   "url": "url.com/userId",
-  "method": "GET"
+  "method": "GET",
+  "headers": {
+    "accept": "text/xml",
+    "accept-language": "en"
+  }
 }

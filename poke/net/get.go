@@ -12,38 +12,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Methods uint8
-
-const (
-	Created Methods = iota
-	GET
-	POST
-	PUT
-	PATCH
-)
-
 var (
 	reqFilePath string
 )
 
-func (method Methods) String() string {
-	switch method {
-	case GET:
-		return "GET"
-	case POST:
-		return "POST"
-	case PUT:
-		return "PUT"
-	case PATCH:
-		return "PATCH"
-	}
-
-	return "unknown"
-}
-
 type Request struct {
-	Url    string `json:"url"`
-	Method string `json:"method"`
+	Url     string            `json:"url"`
+	Method  string            `json:"method"`
+	Headers map[string]string `json:"headers"`
 }
 
 // getCmd represents the get command
@@ -71,15 +47,21 @@ func readJson(pathToRead string) (string, error) {
 		return "", err
 	}
 
+	defer jsonFile.Close()
+
 	byteValue, _ := io.ReadAll(jsonFile)
 
+	// NOTE - Decode json into the result map
 	var request Request
 	json.Unmarshal(byteValue, &request)
 
 	fmt.Println(request.Url)
 	fmt.Println(request.Method)
 
-	defer jsonFile.Close()
+	fmt.Println("Header Data:")
+	for key, value := range request.Headers {
+		fmt.Printf("\tKey: %s, Value: %s\n", key, value)
+	}
 
 	return "Successfuly opened json", nil
 }
