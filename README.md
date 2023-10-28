@@ -1,2 +1,2 @@
 # PokeGelo-CLI
-A 
+Utility CLI for my main project
