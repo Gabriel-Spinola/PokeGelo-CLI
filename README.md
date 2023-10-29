@@ -7,4 +7,5 @@ Using: Cobra-CLI
 ### TODO:
  - [ ] Build project
  - [ ] API requests like postman
- - [ ] Testing
+ - [ ] Write tests
+  
