@@ -93,7 +93,15 @@ var getCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("worked: " + req.Method)
+		resp, err := handleGetRequest(req)
+
+		if err != nil {
+			log.Fatal(err)
+
+			return
+		}
+
+		fmt.Println("worked: " + resp)
 	},
 }
 

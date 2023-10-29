@@ -1,8 +1,4 @@
 {
-  "url": "url.com/userId",
-  "method": "GET",
-  "headers": {
-    "accept": "text/xml",
-    "accept-language": "en"
-  }
+  "url": "http://localhost:3000/users",
+  "method": "GET"
 }

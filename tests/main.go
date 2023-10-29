@@ -1,7 +1,13 @@
-package test_main
+package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/Gabriel-Spinola/PokeGelo-CLI/tests/server"
+)
 
 func main() {
-	fmt.Println("Hello, World")
+	fmt.Println("Starting test server")
+
+	server.RunServer()
 }
