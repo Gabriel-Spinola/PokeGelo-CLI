@@ -26,7 +26,7 @@ var (
 
 func writeResponseFile(resp string) (string, error) {
 	// Unmarshal the stringified JSON response body into a map
-	var data map[string]interface{}
+	var data interface{}
 
 	err := json.Unmarshal([]byte(resp), &data)
 	if err != nil {
@@ -94,7 +94,7 @@ func sendRequest(incomingReq lib.Request, payload []byte) (string, error) {
 
 	stringfiedBody := string(body)
 	if shouldWriteResponse {
-		writeResponseFile(stringfiedBody)
+		return writeResponseFile(stringfiedBody)
 	}
 	return stringfiedBody, nil
 }
