@@ -5,8 +5,10 @@ package net
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -22,48 +24,67 @@ type Request struct {
 	Headers map[string]string `json:"headers"`
 }
 
+type Header struct {
+	APIKey      string `json:"X-API-KEY"`
+	ContentType string `json:"Content-Type"`
+}
+
+func (req *Request) ValidateRequest() error {
+	if req.Method == "" {
+		return errors.New("Missing method in request")
+	}
+
+	if req.Url == "" {
+		return errors.New("missing url in request")
+	}
+
+	return nil
+}
+
+func (req *Request) UnmarshalJson(path string) error {
+	jsonFile, err := os.Open(reqFilePath)
+
+	if err != nil {
+		return err
+	}
+
+	defer jsonFile.Close()
+
+	byteValue, _ := io.ReadAll(jsonFile)
+	json.Unmarshal(byteValue, &req)
+
+	if err := req.ValidateRequest(); err != nil {
+		return err
+	}
+
+	for key, value := range req.Headers {
+		fmt.Printf("\tKey: %s, Value: %s\n", key, value)
+	}
+
+	return nil
+}
+
+func handleGetRequest() {
+
+}
+
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get request",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		data, err := readJson(reqFilePath)
+		var req Request
+		err := req.UnmarshalJson(reqFilePath)
 
 		if err != nil {
-			fmt.Println(err)
+			log.Fatal(err)
 
 			return
 		}
 
-		fmt.Println(data)
+		fmt.Println("worked: " + req.Method)
 	},
-}
-
-func readJson(pathToRead string) (string, error) {
-	jsonFile, err := os.Open(reqFilePath)
-
-	if err != nil {
-		return "", err
-	}
-
-	defer jsonFile.Close()
-
-	byteValue, _ := io.ReadAll(jsonFile)
-
-	// NOTE - Decode json into the result map
-	var request Request
-	json.Unmarshal(byteValue, &request)
-
-	fmt.Println(request.Url)
-	fmt.Println(request.Method)
-
-	fmt.Println("Header Data:")
-	for key, value := range request.Headers {
-		fmt.Printf("\tKey: %s, Value: %s\n", key, value)
-	}
-
-	return "Successfuly opened json", nil
 }
 
 func setGetFlags() {

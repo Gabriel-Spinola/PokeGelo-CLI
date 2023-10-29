@@ -18,7 +18,7 @@ var diskUsageCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		usage := du.NewDiskUsage(".")
 
-		fmt.Printf("%v\n", usage)
+		fmt.Printf("%v\n", usage.Size())
 	},
 }
 
