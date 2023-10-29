@@ -6,11 +6,13 @@ package net
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/lib"
@@ -18,8 +20,37 @@ import (
 )
 
 var (
-	reqFilePath string
+	reqFilePath         string
+	shouldWriteResponse bool
 )
+
+func writeResponseFile(resp string) (string, error) {
+	// Unmarshal the stringified JSON response body into a map
+	var data map[string]interface{}
+
+	err := json.Unmarshal([]byte(resp), &data)
+	if err != nil {
+		return "", err
+	}
+
+	// Marshal the map back to JSON with indentation and line breaks
+	jsonData, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+
+		return "", err
+	}
+
+	// Write the JSON data to a file
+	err = os.WriteFile("output/output.json", jsonData, 0644)
+	if err != nil {
+		fmt.Println("Error writing JSON data to file:", err)
+
+		return "", err
+	}
+
+	return "JSON data has been written to output.json", nil
+}
 
 func sendRequest(incomingReq lib.Request, payload []byte) (string, error) {
 	req, err := http.NewRequest(string(incomingReq.Method), incomingReq.GetFormatedURL(), bytes.NewBuffer(payload))
@@ -62,6 +93,9 @@ func sendRequest(incomingReq lib.Request, payload []byte) (string, error) {
 	}
 
 	stringfiedBody := string(body)
+	if shouldWriteResponse {
+		writeResponseFile(stringfiedBody)
+	}
 	return stringfiedBody, nil
 }
 
@@ -77,8 +111,6 @@ var sendCmd = &cobra.Command{
 
 			return
 		}
-
-		fmt.Println(req.GetFormatedURL())
 
 		payload, err := req.MarshalBody()
 		if err != nil {
@@ -98,8 +130,9 @@ var sendCmd = &cobra.Command{
 	},
 }
 
-func setGetFlags() {
+func setSendFlags() {
 	sendCmd.Flags().StringVarP(&reqFilePath, "filepath", "f", "", "The path to the file")
+	sendCmd.Flags().BoolVarP(&shouldWriteResponse, "writeresponse", "w", false, "should write response file")
 
 	if err := sendCmd.MarkFlagRequired("filepath"); err != nil {
 		fmt.Println(err)
@@ -109,5 +142,5 @@ func setGetFlags() {
 func init() {
 	NetCmd.AddCommand(sendCmd)
 
-	setGetFlags()
+	setSendFlags()
 }
