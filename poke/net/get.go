@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -57,15 +58,24 @@ func (req *Request) UnmarshalJson(path string) error {
 		return err
 	}
 
-	for key, value := range req.Headers {
-		fmt.Printf("\tKey: %s, Value: %s\n", key, value)
-	}
-
 	return nil
 }
 
-func handleGetRequest() {
+func handleGetRequest(req Request) (string, error) {
+	resp, err := http.Get(req.Url)
 
+	if err != nil {
+		return "", err
+	}
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		return "", err
+	}
+
+	stringfiedBody := string(body)
+	return stringfiedBody, nil
 }
 
 // getCmd represents the get command
