@@ -5,10 +5,13 @@ package net
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
+	"time"
 
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/lib"
 	"github.com/spf13/cobra"
@@ -24,7 +27,27 @@ func sendRequest(incomingReq lib.Request, payload []byte) (string, error) {
 		return "", err
 	}
 
-	var client *http.Client = &http.Client{}
+	for key, header := range incomingReq.Headers {
+		req.Header.Set(key, header)
+	}
+
+	for _, cookie := range incomingReq.Cookies {
+		req.AddCookie(&cookie)
+	}
+
+	var client *http.Client = &http.Client{
+		Timeout: time.Duration(incomingReq.Timeout),
+		Transport: &http.Transport{
+			Proxy: func(*http.Request) (*url.URL, error) {
+				for _, proxy := range incomingReq.Proxies {
+					return &url.URL{Path: proxy}, nil
+				}
+
+				return nil, nil
+			},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: incomingReq.VerifyTLS},
+		},
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {

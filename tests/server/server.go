@@ -22,6 +22,20 @@ func getUsers(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, users)
 }
 
+func getUsersById(ctx *gin.Context) {
+	var id string = ctx.Param("id")
+
+	for _, user := range users {
+		if user.ID == id {
+			ctx.IndentedJSON(http.StatusOK, user)
+
+			return
+		}
+	}
+
+	ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
+}
+
 func postUsers(ctx *gin.Context) {
 	var newUser user
 
@@ -36,9 +50,24 @@ func postUsers(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusCreated, newUser)
 }
 
+func putUser(ctx *gin.Context) {
+	ctx.IndentedJSON(http.StatusOK, users)
+}
+
+func patchUser(ctx *gin.Context) {
+	ctx.IndentedJSON(http.StatusOK, users)
+}
+
+func patchDelete(ctx *gin.Context) {
+	ctx.IndentedJSON(http.StatusOK, users)
+}
+
 func RunServer() {
 	router := gin.Default()
+
 	router.GET("/users", getUsers)
+	router.GET("/users/:id", getUsersById)
+
 	router.POST("/users", postUsers)
 
 	router.Run("localhost:8080")

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -28,10 +29,11 @@ type Request struct {
 	Method         HttpMethod             `json:"method"`
 	Headers        map[string]string      `json:"headers"`
 	Body           map[string]interface{} `json:"body"`
-	Cookies        map[string]interface{} `json:"cookies"`
-	Timeout        float32                `json:"timeout"`
+	Cookies        map[string]http.Cookie `json:"cookies"`
+	Timeout        uint                   `json:"timeout"`
 	AllowRedirects bool                   `json:"allow-redirects"`
 	Proxies        map[string]string      `json:"proxies"`
+	VerifyTLS      bool                   `json:"verify"`
 }
 
 type Header struct {
