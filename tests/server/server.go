@@ -21,9 +21,14 @@ func getUsers(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, users)
 }
 
+func postUsers(ctx *gin.Context) {
+	ctx.IndentedJSON(http.StatusOK, users)
+}
+
 func RunServer() {
 	router := gin.Default()
 	router.GET("/users", getUsers)
+	router.POST("users")
 
 	router.Run("localhost:8080")
 }

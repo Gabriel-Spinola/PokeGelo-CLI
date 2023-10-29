@@ -7,10 +7,29 @@ import (
 	"os"
 )
 
+type HttpMethod string
+
+const (
+	GET     HttpMethod = "GET"
+	POST    HttpMethod = "POST"
+	PUT     HttpMethod = "PUT"
+	PATCH   HttpMethod = "PATCH"
+	DELETE  HttpMethod = "DELETE"
+	HEADER  HttpMethod = "HEADER"
+	OPTIONS HttpMethod = "OPTIONS"
+	// Add more methods as needed
+)
+
 type Request struct {
-	Url     string            `json:"url"`
-	Method  string            `json:"method"`
-	Headers map[string]string `json:"headers"`
+	Url            string                 `json:"url"`    // Required
+	Params         map[string]interface{} `json:"params"` // Required
+	Method         HttpMethod             `json:"method"`
+	Headers        map[string]string      `json:"headers"`
+	Body           map[string]interface{} `json:"body"`
+	Cookies        map[string]interface{} `json:"cookies"`
+	Timeout        float32                `json:"timeout"`
+	AllowRedirects bool                   `json:"allow_redirects"`
+	Proxies        map[string]string      `json:"proxies"`
 }
 
 type Header struct {
@@ -19,6 +38,20 @@ type Header struct {
 }
 
 func (req *Request) ValidateRequest() error {
+	validMethods := map[HttpMethod]bool{
+		GET:     true,
+		POST:    true,
+		PUT:     true,
+		PATCH:   true,
+		HEADER:  true,
+		DELETE:  true,
+		OPTIONS: true,
+	}
+
+	if !validMethods[req.Method] {
+		return errors.New("Invalid HTTP method")
+	}
+
 	if req.Method == "" {
 		return errors.New("Missing method in request")
 	}
@@ -46,5 +79,10 @@ func (req *Request) UnmarshalJson(path string) error {
 		return err
 	}
 
+	return nil
+}
+
+// TODO - accept yml
+func (req *Request) UnmarshalYml(path string) error {
 	return nil
 }
