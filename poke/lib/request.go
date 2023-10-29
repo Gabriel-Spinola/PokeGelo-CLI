@@ -3,7 +3,9 @@ package lib
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
+	"log"
 	"os"
 )
 
@@ -21,14 +23,14 @@ const (
 )
 
 type Request struct {
-	Url            string                 `json:"url"`    // Required
-	Params         map[string]interface{} `json:"params"` // Required
+	Url            string                 `json:"url"`          // Required
+	QueryParams    map[string]string      `json:"query-params"` // Required
 	Method         HttpMethod             `json:"method"`
 	Headers        map[string]string      `json:"headers"`
 	Body           map[string]interface{} `json:"body"`
 	Cookies        map[string]interface{} `json:"cookies"`
 	Timeout        float32                `json:"timeout"`
-	AllowRedirects bool                   `json:"allow_redirects"`
+	AllowRedirects bool                   `json:"allow-redirects"`
 	Proxies        map[string]string      `json:"proxies"`
 }
 
@@ -82,7 +84,46 @@ func (req *Request) UnmarshalJson(path string) error {
 	return nil
 }
 
+func (req *Request) MarshalBody() ([]byte, error) {
+	if len(req.Body) <= 0 {
+		return nil, nil
+	}
+
+	bytesValue, err := json.Marshal(req.Body)
+	if err != nil {
+		log.Fatal(err)
+
+		return nil, err
+	}
+
+	return bytesValue, nil
+
+}
+
 // TODO - accept yml
 func (req *Request) UnmarshalYml(path string) error {
 	return nil
+}
+
+func (req *Request) GetFormatedURL() string {
+	if len(req.QueryParams) <= 0 {
+		return req.Url
+	}
+
+	var index uint = 0
+
+	for key, value := range req.QueryParams {
+		if index == 0 {
+			req.Url = req.Url + fmt.Sprintf("?%s=%s", key, value)
+
+			index++
+			continue
+		}
+
+		req.Url = req.Url + fmt.Sprintf("&%s=%s", key, value)
+
+		index++
+	}
+
+	return req.Url
 }
