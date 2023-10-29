@@ -6,8 +6,8 @@ package cmd
 import (
 	"os"
 
-	"github.com/Gabriel-Spinola/PokeGelo-CLI/info"
-	"github.com/Gabriel-Spinola/PokeGelo-CLI/net"
+	"github.com/Gabriel-Spinola/PokeGelo-CLI/commands/info"
+	"github.com/Gabriel-Spinola/PokeGelo-CLI/commands/net"
 	"github.com/spf13/cobra"
 )
 
