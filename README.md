@@ -8,4 +8,4 @@ Using: Cobra-CLI
  - [ ] Build project
  - [ ] API requests like postman
  - [ ] Write tests
-  
+ - [ ] Dockerize
