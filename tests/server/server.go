@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,13 +23,23 @@ func getUsers(ctx *gin.Context) {
 }
 
 func postUsers(ctx *gin.Context) {
-	ctx.IndentedJSON(http.StatusOK, users)
+	var newUser user
+
+	// Bind json data into newUser
+	if err := ctx.BindJSON(&newUser); err != nil {
+		log.Fatal("Failed to bind json")
+
+		return
+	}
+
+	users = append(users, newUser)
+	ctx.IndentedJSON(http.StatusCreated, newUser)
 }
 
 func RunServer() {
 	router := gin.Default()
 	router.GET("/users", getUsers)
-	router.POST("users")
+	router.POST("/users", postUsers)
 
 	router.Run("localhost:8080")
 }
