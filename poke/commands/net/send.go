@@ -52,7 +52,7 @@ func writeResponseFile(resp string) (string, error) {
 	return "JSON data has been written to output.json", nil
 }
 
-func sendRequest(incomingReq lib.Request, payload []byte) (string, error) {
+func SendRequest(incomingReq lib.Request, payload []byte) (string, error) {
 	req, err := http.NewRequest(string(incomingReq.Method), incomingReq.GetFormatedURL(), bytes.NewBuffer(payload))
 	if err != nil {
 		return "", err
@@ -119,7 +119,7 @@ var sendCmd = &cobra.Command{
 			return
 		}
 
-		resBody, err := sendRequest(req, payload)
+		resBody, err := SendRequest(req, payload)
 		if err != nil {
 			log.Fatal(err)
 

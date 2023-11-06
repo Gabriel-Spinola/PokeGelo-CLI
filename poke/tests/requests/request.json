@@ -1,0 +1,13 @@
+{
+  "url": "http://localhost:3000/api/services/posts/only/clnxegjme0004voigngacw3ye",
+  "method": "GET",
+  "headers": {
+    "Accept": "*/*",
+    "Content-Type": "application/json",
+    "X-API-Key": "wnLYD9F2gZbjckqpONOL4EI0dM7tf7fTeNh+pKrKZgY="
+  },
+  "body": {
+    "ID": "4",
+    "name": "Usur"
+  }
+}
