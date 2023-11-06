@@ -52,10 +52,15 @@ func writeResponseFile(resp string) (string, error) {
 	return "JSON data has been written to output.json", nil
 }
 
-func SendRequest(incomingReq lib.Request, payload []byte) (string, error) {
+type Response struct {
+	StringifiedBody string
+	StatusCode      int
+}
+
+func SendRequest(incomingReq lib.Request, payload []byte) (Response, error) {
 	req, err := http.NewRequest(string(incomingReq.Method), incomingReq.GetFormatedURL(), bytes.NewBuffer(payload))
 	if err != nil {
-		return "", err
+		return Response{}, err
 	}
 
 	for key, header := range incomingReq.Headers {
@@ -82,21 +87,27 @@ func SendRequest(incomingReq lib.Request, payload []byte) (string, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return Response{}, err
 	}
 
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return Response{}, err
 	}
 
 	stringfiedBody := string(body)
 	if shouldWriteResponse {
-		return writeResponseFile(stringfiedBody)
+		data, err := writeResponseFile(stringfiedBody)
+		if err != nil {
+			return Response{}, err
+		}
+
+		return Response{StringifiedBody: data, StatusCode: resp.StatusCode}, nil
 	}
-	return stringfiedBody, nil
+
+	return Response{StringifiedBody: stringfiedBody, StatusCode: resp.StatusCode}, nil
 }
 
 // sendCmd represents the get command
@@ -126,7 +137,7 @@ var sendCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("# Response body: \n" + resBody)
+		fmt.Println("# Response body: \n" + resBody.StringifiedBody)
 	},
 }
 

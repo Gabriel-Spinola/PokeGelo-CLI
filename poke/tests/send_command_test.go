@@ -1,35 +1,35 @@
 package tests
 
 import (
+	"net/http"
 	"testing"
 
+	"github.com/Gabriel-Spinola/PokeGelo-CLI/commands/net"
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/lib"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestSendRequest(t *testing.T) {
-	request := lib.Request{
-		Url: "http://localhost:3000/api/services/posts/only/clnxegjme0004voigngacw3ye",
-		Method: "GET",
-		Header: {
-			"Accept": "*/*",
-			"Content-Type": "application/json",
-			"X-API-Key": "wnLYD9F2gZbjckqpONOL4EI0dM7tf7fTeNh+pKrKZgY="
-		}
-	}
+var reqFilePath string = "/home/pingola/Desktop/pokegelo-cli/poke/tests/requests/request.json"
 
+func TestSendRequest(t *testing.T) {
 	var req lib.Request
 	if err := req.UnmarshalJson(reqFilePath); err != nil {
-		log.Fatal(err)
+		t.Errorf("Failed to unmarshal the json sent %v", err)
 
 		return
 	}
 
 	payload, err := req.MarshalBody()
 	if err != nil {
-		log.Fatal(err)
+		t.Errorf("Failed to marshal payload body %v", err)
 
 		return
 	}
-	
-	write := net.SendRequest()
+
+	writer, err := net.SendRequest(req, payload)
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.Equal(t, http.StatusOK, writer.StatusCode)
 }
