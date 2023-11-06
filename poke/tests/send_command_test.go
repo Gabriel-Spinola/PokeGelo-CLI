@@ -9,27 +9,47 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var reqFilePath string = "/home/pingola/Desktop/pokegelo-cli/poke/tests/requests/request.json"
+var requestPaths = map[lib.HttpMethod]string{
+	lib.GET:    "./requests/get.json",
+	lib.POST:   "./requests/post.json",
+	lib.PATCH:  "./requests/patch.json",
+	lib.PUT:    "./requests/put.json",
+	lib.DELETE: "./requests/delete.json",
+}
 
 func TestSendRequest(t *testing.T) {
-	var req lib.Request
-	if err := req.UnmarshalJson(reqFilePath); err != nil {
-		t.Errorf("Failed to unmarshal the json sent %v", err)
-
-		return
+	possibleRequests := []string{
+		requestPaths[lib.GET],
+		requestPaths[lib.POST],
+		requestPaths[lib.PATCH],
+		requestPaths[lib.PUT],
+		requestPaths[lib.DELETE],
 	}
 
-	payload, err := req.MarshalBody()
-	if err != nil {
-		t.Errorf("Failed to marshal payload body %v", err)
+	for _, request := range possibleRequests {
+		var req lib.Request
+		if err := req.UnmarshalJson(request); err != nil {
+			t.Errorf("Failed to unmarshal the json sent. In: %v, err: %v", request, err)
 
-		return
+			return
+		}
+
+		payload, err := req.MarshalBody()
+		if err != nil {
+			t.Errorf("Failed to marshal payload body %v", err)
+
+			return
+		}
+
+		writer, err := net.SendRequest(req, payload)
+		if err != nil {
+			t.Error(err)
+		}
+
+		assert.Equal(t, http.StatusOK, writer.StatusCode)
 	}
+}
 
-	writer, err := net.SendRequest(req, payload)
-	if err != nil {
-		t.Error(err)
-	}
+func TestWriteResponseFile(t *testing.T) {
 
-	assert.Equal(t, http.StatusOK, writer.StatusCode)
 }
