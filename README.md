@@ -68,9 +68,9 @@ go test
 ```
 
 ## Future Plans
-Docker Support: Dockerize PokeGelo-CLI for easy deployment and management.
-Interactive Mode: Implement an interactive mode for building requests directly from the command line.
-More HTTP Methods: Add support for additional HTTP methods and request customization options.
+- Docker Support: Dockerize PokeGelo-CLI for easy deployment and management.
+- Interactive Mode: Implement an interactive mode for building requests directly from the command line.
+- Better request bulding and other utilities.
 
 ## Contribution Guidelines
 Contributions to PokeGelo-CLI are welcome! If you have any ideas for improvements, bug fixes, or new features, feel free to open an issue or submit a pull request.
