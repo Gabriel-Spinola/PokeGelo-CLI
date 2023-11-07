@@ -76,9 +76,9 @@ go test
 Contributions to PokeGelo-CLI are welcome! If you have any ideas for improvements, bug fixes, or new features, feel free to open an issue or submit a pull request.
 
 License
-PokeGelo-CLI is licensed under the MIT License. Feel free to use, modify, and distribute this tool as needed.
+PokeGelo-CLI is licensed under the GPL 3.0 License. Feel free to use, modify, and distribute this tool as needed.
 
-Thank you for using PokeGelo-CLI! If you have any questions or feedback, please don't hesitate to reach out. Happy coding! 🚀
+Thank you for using PokeGelo-CLI! If you have any questions or feedback, please don't hesitate to reach out. Happy coding!
 
 ### TODO:
  - [ ] Build project
