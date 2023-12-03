@@ -81,9 +81,10 @@ PokeGelo-CLI is licensed under the GPL 3.0 License. Feel free to use, modify, an
 Thank you for using PokeGelo-CLI! If you have any questions or feedback, please don't hesitate to reach out. Happy coding!
 
 ### TODO:
- - [ ] Build project
+ - [X] Build project
  - [X] API requests like postman
  - [X] Write first test
- - [ ] Write possible request
- - [ ] Document
+ - [X] Request builder
+ - [ ] Tests
+ - [ ] Documentation
  - [ ] Dockerize
