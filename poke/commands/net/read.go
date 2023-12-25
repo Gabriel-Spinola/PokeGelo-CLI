@@ -106,6 +106,14 @@ var readCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
+
+		if len(targetFilePaths) == 1 {
+			processFile(targetFilePaths[0])
+
+			fmt.Println("TOOK: ", time.Since(start))
+			return
+		}
+
 		isDoneChan := make(chan bool)
 
 		go processFiles(targetFilePaths, isDoneChan)
