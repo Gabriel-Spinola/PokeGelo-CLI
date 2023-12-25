@@ -4,10 +4,6 @@
   "headers": {
     "Accept": "*/*",
     "Content-Type": "application/json",
-    "X-API-Key": "wnLYD9F2gZbjckqpONOL4EI0dM7tf7fTeNh+pKrKZgY="
-  },
-  "body": {
-    "ID": "4",
-    "name": "Usur"
+    "X-API-Key": ""
   }
 }
