@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/lib"
@@ -43,18 +42,20 @@ func readFileData(filePath string) (FileData, error) {
 	}
 
 	if err := json.Unmarshal(byteValue, &data); err != nil {
+		log.Fatal("Failed to unmarshal file", err)
+
 		return FileData{}, err
 	}
 
 	return FileData{Data: data, bytes: byteValue}, nil
 }
 
-func processFile(filePath string) {
+func handleFileRead(filePath string) bool {
 	var result = new(lib.Request)
 
 	fileData, err := readFileData(filePath)
 	if err != nil {
-		return
+		return false
 	}
 
 	result.Body = make(map[string]any)
@@ -62,7 +63,7 @@ func processFile(filePath string) {
 	if !ok {
 		log.Fatal("Failed to read file data (Wrong format)")
 
-		return
+		return false
 	}
 
 	result.Body = data
@@ -70,34 +71,17 @@ func processFile(filePath string) {
 	if err != nil {
 		log.Fatal("Failed to marshal body")
 
-		return
+		return false
 	}
 
 	err = os.WriteFile("output"+lib.PATH_SEPARATOR+"builder_output_"+filepath.Base(filePath), bytes, 0644)
 	if err != nil {
 		log.Fatal("Failed to write json to file: ", err)
 
-		return
-	}
-}
-
-func processFiles(filePaths []string, isDoneChan chan<- bool) {
-	var waitGroup sync.WaitGroup
-
-	for _, filePath := range filePaths {
-		waitGroup.Add(1)
-		go func(fp string) {
-			defer waitGroup.Done()
-
-			processFile(fp)
-			isDoneChan <- true
-		}(filePath)
+		return false
 	}
 
-	go func() {
-		waitGroup.Wait()
-		close(isDoneChan)
-	}()
+	return true
 }
 
 var readCmd = &cobra.Command{
@@ -108,7 +92,7 @@ var readCmd = &cobra.Command{
 		start := time.Now()
 
 		if len(targetFilePaths) == 1 {
-			processFile(targetFilePaths[0])
+			handleFileRead(targetFilePaths[0])
 
 			fmt.Println("TOOK: ", time.Since(start))
 			return
@@ -116,7 +100,7 @@ var readCmd = &cobra.Command{
 
 		isDoneChan := make(chan bool)
 
-		go processFiles(targetFilePaths, isDoneChan)
+		go lib.ConcurrentFileProcessor(targetFilePaths, isDoneChan, handleFileRead)
 
 		for result := range isDoneChan {
 			fmt.Println(result)

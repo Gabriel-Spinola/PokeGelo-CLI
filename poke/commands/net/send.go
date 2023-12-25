@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/lib"
@@ -20,11 +21,16 @@ import (
 )
 
 var (
-	reqFilePath         string
+	reqFilePaths        []string
 	shouldWriteResponse bool
 )
 
-func writeResponseFile(resp string) (string, error) {
+type Response struct {
+	StringifiedBody string
+	StatusCode      int
+}
+
+func writeResponseFile(resp string, respFileName string) (string, error) {
 	// Unmarshal the stringified JSON response body into a map
 	var data interface{}
 
@@ -41,23 +47,20 @@ func writeResponseFile(resp string) (string, error) {
 		return "", err
 	}
 
+	var outputPath = "output" + lib.PATH_SEPARATOR + "output_" + respFileName
+
 	// Write the JSON data to a file
-	err = os.WriteFile("output/output.json", jsonData, 0644)
+	err = os.WriteFile(outputPath, jsonData, 0644)
 	if err != nil {
 		fmt.Println("Error writing JSON data to file:", err)
 
 		return "", err
 	}
 
-	return "JSON data has been written to output.json", nil
+	return "JSON data has been written to " + outputPath, nil
 }
 
-type Response struct {
-	StringifiedBody string
-	StatusCode      int
-}
-
-func SendRequest(incomingReq lib.Request, payload []byte) (Response, error) {
+func SendRequest(incomingReq lib.Request, payload []byte, resFileName string) (Response, error) {
 	req, err := http.NewRequest(string(incomingReq.Method), incomingReq.GetFormatedURL(), bytes.NewBuffer(payload))
 	if err != nil {
 		return Response{}, err
@@ -87,6 +90,8 @@ func SendRequest(incomingReq lib.Request, payload []byte) (Response, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Fatal("Failed to create client")
+
 		return Response{}, err
 	}
 
@@ -99,7 +104,7 @@ func SendRequest(incomingReq lib.Request, payload []byte) (Response, error) {
 
 	stringfiedBody := string(body)
 	if shouldWriteResponse {
-		data, err := writeResponseFile(stringfiedBody)
+		data, err := writeResponseFile(stringfiedBody, resFileName)
 		if err != nil {
 			return Response{}, err
 		}
@@ -110,39 +115,63 @@ func SendRequest(incomingReq lib.Request, payload []byte) (Response, error) {
 	return Response{StringifiedBody: stringfiedBody, StatusCode: resp.StatusCode}, nil
 }
 
+func handleSend(filePath string) Response {
+	var req lib.Request
+	if err := req.UnmarshalJson(filePath); err != nil {
+		log.Fatal("Failed to unmarshal file", err)
+
+		return Response{}
+	}
+
+	payload, err := req.MarshalBody()
+	if err != nil {
+		log.Fatal("Failed to marshal body ", err)
+
+		return Response{}
+	}
+
+	resBody, err := SendRequest(req, payload, filepath.Base(filePath))
+	if err != nil {
+		log.Fatal("Failed to send request: ", err)
+
+		return Response{}
+	}
+
+	return resBody
+}
+
 // sendCmd represents the get command
 var sendCmd = &cobra.Command{
 	Use:   "send",
 	Short: "send a request to remote server",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		var req lib.Request
-		if err := req.UnmarshalJson(reqFilePath); err != nil {
-			log.Fatal(err)
+		start := time.Now()
 
+		fmt.Println(reqFilePaths)
+
+		if len(reqFilePaths) == 1 {
+			resBody := handleSend(reqFilePaths[0])
+
+			fmt.Println(resBody.StringifiedBody)
 			return
 		}
 
-		payload, err := req.MarshalBody()
-		if err != nil {
-			log.Fatal(err)
+		responseChannel := make(chan Response)
+		go lib.ConcurrentFileProcessor(reqFilePaths, responseChannel, handleSend)
 
-			return
+		for result := range responseChannel {
+			fmt.Println(result)
 		}
 
-		resBody, err := SendRequest(req, payload)
-		if err != nil {
-			log.Fatal(err)
+		<-responseChannel
 
-			return
-		}
-
-		fmt.Println("# Response body: \n" + resBody.StringifiedBody)
+		fmt.Println("TOOK: ", time.Since(start))
 	},
 }
 
 func setSendFlags() {
-	sendCmd.Flags().StringVarP(&reqFilePath, "filepath", "f", "", "The path to the file")
+	sendCmd.Flags().StringSliceVarP(&reqFilePaths, "filepath", "f", []string{}, "The path to the file")
 	sendCmd.Flags().BoolVarP(&shouldWriteResponse, "writeresponse", "w", false, "should write response file")
 
 	if err := sendCmd.MarkFlagRequired("filepath"); err != nil {
