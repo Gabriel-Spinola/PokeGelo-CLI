@@ -50,7 +50,7 @@ func readFileData(filePath string) (FileData, error) {
 	return FileData{Data: data, bytes: byteValue}, nil
 }
 
-func handleFileRead(filePath string) bool {
+func handleFilebuild(filePath string) bool {
 	var result = new(lib.Request)
 
 	fileData, err := readFileData(filePath)
@@ -84,15 +84,15 @@ func handleFileRead(filePath string) bool {
 	return true
 }
 
-var readCmd = &cobra.Command{
-	Use:   "read",
-	Short: "Build a template request json with the given body data",
+var buildCmd = &cobra.Command{
+	Use:   "build",
+	Short: "Insert specified JSON data into a predefined Request template `body`.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
 
 		if len(targetFilePaths) == 1 {
-			handleFileRead(targetFilePaths[0])
+			handleFilebuild(targetFilePaths[0])
 
 			fmt.Println("TOOK: ", time.Since(start))
 			return
@@ -100,7 +100,7 @@ var readCmd = &cobra.Command{
 
 		isDoneChan := make(chan bool)
 
-		go lib.ConcurrentFileProcessor(targetFilePaths, isDoneChan, handleFileRead)
+		go lib.ConcurrentFileProcessor(targetFilePaths, isDoneChan, handleFilebuild)
 
 		for result := range isDoneChan {
 			fmt.Println(result)
@@ -112,16 +112,16 @@ var readCmd = &cobra.Command{
 	},
 }
 
-func setReadFlags() {
-	readCmd.Flags().StringSliceVarP(&targetFilePaths, "filepath", "f", []string{}, "The path to the files")
+func setbuildFlags() {
+	buildCmd.Flags().StringSliceVarP(&targetFilePaths, "filepath", "f", []string{}, "The path to the files")
 
-	if err := readCmd.MarkFlagRequired("filepath"); err != nil {
+	if err := buildCmd.MarkFlagRequired("filepath"); err != nil {
 		fmt.Println(err)
 	}
 }
 
 func init() {
-	NetCmd.AddCommand(readCmd)
+	NetCmd.AddCommand(buildCmd)
 
-	setReadFlags()
+	setbuildFlags()
 }
