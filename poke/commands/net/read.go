@@ -7,11 +7,14 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/lib"
 	"github.com/spf13/cobra"
 )
+
+// TODO - Passing directories
 
 var targetFilePaths []string
 
@@ -78,16 +81,40 @@ func processFile(filePath string) {
 	}
 }
 
+func processFiles(filePaths []string, isDoneChan chan<- bool) {
+	var waitGroup sync.WaitGroup
+
+	for _, filePath := range filePaths {
+		waitGroup.Add(1)
+		go func(fp string) {
+			defer waitGroup.Done()
+
+			processFile(fp)
+			isDoneChan <- true
+		}(filePath)
+	}
+
+	go func() {
+		waitGroup.Wait()
+		close(isDoneChan)
+	}()
+}
+
 var readCmd = &cobra.Command{
 	Use:   "read",
 	Short: "Build a template request json with the given body data",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
+		isDoneChan := make(chan bool)
 
-		for _, filePath := range targetFilePaths {
-			processFile(filePath)
+		go processFiles(targetFilePaths, isDoneChan)
+
+		for result := range isDoneChan {
+			fmt.Println(result)
 		}
+
+		<-isDoneChan
 
 		fmt.Println("TOOK: ", time.Since(start))
 	},
