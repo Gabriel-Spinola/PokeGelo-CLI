@@ -6,8 +6,8 @@ PokeGelo-CLI is a command-line interface (CLI) tool designed to simplify sending
 - Simplified syntax compared to curl.
 - Supports various HTTP methods: GET, POST, PUT, PATCH, DELETE, etc.
 - Unit testing implementation ensures the reliability of the tool.
-- Easy-to-use command: `poke net send -f <path to the file>`
-- Docker support for seamless containerization (coming soon).
+- Concurrent Processing: Couroutines for faster processing of multiple files concurrently.
+- Dynamic Request Body Building: Build HTTP request bodies dynamically by reading any JSON file.
 
 ## Installation
 To install PokeGelo-CLI, follow these steps:
@@ -59,6 +59,14 @@ poke net send -w -f /path/to/your/request.json
 ```
 This will send the specified HTTP request using the information provided in the JSON file and write the response to the output folder.
 
+### Building Multiple Requests
+To build multiple requests, use the following command:
+
+```
+poke net build -f /path/to/file1.json,/path/to/file2.json
+```
+This will build multiple requests concurrently.
+
 ## Unit Testing
 PokeGelo-CLI includes comprehensive unit tests to ensure its functionality and reliability. You can run the tests using the following command:
 
@@ -85,6 +93,6 @@ Thank you for using PokeGelo-CLI! If you have any questions or feedback, please 
  - [X] API requests like postman
  - [X] Write first test
  - [X] Request builder
+ - [X] Documentation
  - [ ] Tests
- - [ ] Documentation
  - [ ] Dockerize
