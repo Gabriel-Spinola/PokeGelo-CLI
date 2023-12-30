@@ -94,5 +94,6 @@ Thank you for using PokeGelo-CLI! If you have any questions or feedback, please 
  - [X] Write first test
  - [X] Request builder
  - [X] Documentation
+ - [ ] Configurations
  - [ ] Tests
  - [ ] Dockerize
