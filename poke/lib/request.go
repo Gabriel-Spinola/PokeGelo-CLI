@@ -20,7 +20,6 @@ const (
 	DELETE  HttpMethod = "DELETE"
 	HEADER  HttpMethod = "HEADER"
 	OPTIONS HttpMethod = "OPTIONS"
-	// Add more methods as needed
 )
 
 type Request struct {

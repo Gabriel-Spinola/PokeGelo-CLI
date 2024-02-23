@@ -1,4 +1,9 @@
+<div align="center">
+  
 # PokeGelo-CLI
+![OIG_1](https://github.com/Gabriel-Spinola/PokeGelo-CLI/assets/69523963/b05634cb-fda1-41d0-949d-c2bb1000d840)
+</div>
+
 PokeGelo-CLI is a command-line interface (CLI) tool designed to simplify sending HTTP requests, making it easier and more intuitive compared to using curl. With PokeGelo-CLI, you can send HTTP requests by providing a JSON file containing the request and its body. This tool is especially useful for testing APIs, debugging, and automating HTTP requests. Inspired by [Quaezo](https://github.com/zahash/quaeso/tree/main)
 
 ## Features
@@ -6,8 +11,8 @@ PokeGelo-CLI is a command-line interface (CLI) tool designed to simplify sending
 - Simplified syntax compared to curl.
 - Supports various HTTP methods: GET, POST, PUT, PATCH, DELETE, etc.
 - Unit testing implementation ensures the reliability of the tool.
-- Easy-to-use command: `poke net send -f <path to the file>`
-- Docker support for seamless containerization (coming soon).
+- Concurrent Processing: Couroutines for faster processing of multiple files concurrently.
+- Dynamic Request Body Building: Build HTTP request bodies dynamically by reading any JSON file.
 
 ## Installation
 To install PokeGelo-CLI, follow these steps:
@@ -15,7 +20,7 @@ To install PokeGelo-CLI, follow these steps:
 Clone the Repository:
 
 ```sh
-git clone https://github.com/your-username/PokeGelo-CLI.git
+git clone https://github.com/Gabriel-Spinola/PokeGelo-CLI.git
 cd PokeGelo-CLI
 ```
 Build the Executable:
@@ -59,6 +64,14 @@ poke net send -w -f /path/to/your/request.json
 ```
 This will send the specified HTTP request using the information provided in the JSON file and write the response to the output folder.
 
+### Building Multiple Requests
+To build multiple requests, use the following command:
+
+```
+poke net build -f /path/to/file1.json,/path/to/file2.json
+```
+This will build multiple requests concurrently.
+
 ## Unit Testing
 PokeGelo-CLI includes comprehensive unit tests to ensure its functionality and reliability. You can run the tests using the following command:
 
@@ -81,9 +94,11 @@ PokeGelo-CLI is licensed under the GPL 3.0 License. Feel free to use, modify, an
 Thank you for using PokeGelo-CLI! If you have any questions or feedback, please don't hesitate to reach out. Happy coding!
 
 ### TODO:
- - [ ] Build project
+ - [X] Build project
  - [X] API requests like postman
  - [X] Write first test
- - [ ] Write possible request
- - [ ] Document
+ - [X] Request builder
+ - [X] Documentation
+ - [ ] Configurations
+ - [ ] Tests
  - [ ] Dockerize
