@@ -20,7 +20,7 @@ To install PokeGelo-CLI, follow these steps:
 Clone the Repository:
 
 ```sh
-git clone https://github.com/your-username/PokeGelo-CLI.git
+git clone https://github.com/Gabriel-Spinola/PokeGelo-CLI.git
 cd PokeGelo-CLI
 ```
 Build the Executable:
