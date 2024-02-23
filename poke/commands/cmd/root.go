@@ -6,6 +6,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/Gabriel-Spinola/PokeGelo-CLI/commands/config"
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/commands/info"
 	"github.com/Gabriel-Spinola/PokeGelo-CLI/commands/net"
 	"github.com/spf13/cobra"
@@ -31,6 +32,7 @@ func Execute() {
 func addSubCommadsPalletes() {
 	rootCmd.AddCommand(net.NetCmd)
 	rootCmd.AddCommand(info.InfoCmd)
+	rootCmd.AddCommand(config.ConfigCmd)
 }
 
 func init() {

@@ -52,11 +52,11 @@ func (req *Request) ValidateRequest() error {
 	}
 
 	if !validMethods[req.Method] {
-		return errors.New("Invalid HTTP method")
+		return errors.New("invalid HTTP method")
 	}
 
 	if req.Method == "" {
-		return errors.New("Missing method in request")
+		return errors.New("missing method in request")
 	}
 
 	if req.Url == "" {
