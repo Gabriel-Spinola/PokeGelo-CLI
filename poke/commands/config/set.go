@@ -4,6 +4,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	defaultOutputPath string
+)
+
 // ConfigCmd represents the info command
 var SetCmd = &cobra.Command{
 	Use:   "set",
@@ -14,6 +18,8 @@ var SetCmd = &cobra.Command{
 	},
 }
 
+// / Set default output path
+// / Set
 func init() {
-
+	SetCmd.Flags().StringVarP(&defaultOutputPath, "default-output-path", "do", "", "Set the output path for any writting related command")
 }
