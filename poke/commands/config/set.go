@@ -1,11 +1,9 @@
 package config
 
 import (
+	cfg "github.com/Gabriel-Spinola/PokeGelo-CLI/cmd_config"
 	"github.com/spf13/cobra"
-)
-
-var (
-	defaultOutputPath string
+	"github.com/spf13/viper"
 )
 
 // ConfigCmd represents the info command
@@ -14,12 +12,16 @@ var SetCmd = &cobra.Command{
 	Short: "Set specified settings",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		var config cfg.CMDConfig
+
+		if config.OutputPath != "" {
+			viper.Set(cfg.OutputPathField, config.OutputPath)
+		}
 	},
 }
 
 // / Set default output path
 // / Set
 func init() {
-	SetCmd.Flags().StringVarP(&defaultOutputPath, "default-output-path", "do", "", "Set the output path for any writting related command")
+	SetCmd.Flags().StringVarP(&config.OutputPath, "output-path", "o", "", "Set the output path for any writting related command")
 }
