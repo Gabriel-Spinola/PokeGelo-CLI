@@ -153,6 +153,7 @@ var sendCmd = &cobra.Command{
 		if len(reqFilePaths) == 1 {
 			resBody := handleSend(reqFilePaths[0])
 
+			fmt.Printf("Status: %d\n\n", resBody.StatusCode)
 			fmt.Println(resBody.StringifiedBody)
 			return
 		}
